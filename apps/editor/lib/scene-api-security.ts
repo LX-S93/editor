@@ -66,12 +66,21 @@ function validateAuth(request: Request): NextResponse | null {
   const token = process.env.PASCAL_SCENE_API_TOKEN
   if (!token) {
     if (isLoopbackRequest(request)) return null
+    // Self-hosted LAN/VPN deployments: the browser UI calls this API without a
+    // token, so a non-loopback host can only work if the operator explicitly
+    // opts in and protects access elsewhere (VPN, reverse-proxy login).
+    if (isOpenAccessEnabled()) return null
     return sceneApiJson(request, { error: 'scene_api_token_required' }, { status: 503 })
   }
 
   const supplied = bearerToken(request) ?? request.headers.get('x-pascal-scene-token')
   if (supplied && safeEqual(supplied, token)) return null
   return sceneApiJson(request, { error: 'unauthorized' }, { status: 401 })
+}
+
+function isOpenAccessEnabled(): boolean {
+  const raw = process.env.PASCAL_SCENE_API_OPEN_ACCESS?.trim().toLowerCase()
+  return raw === '1' || raw === 'true'
 }
 
 function validateRateLimit(request: Request): NextResponse | null {

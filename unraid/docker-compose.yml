@@ -1,0 +1,22 @@
+# Unraid: Docker Compose Manager plugin (or any Docker host).
+# Image is built by .github/workflows/docker-image.yml.
+services:
+  pascal-houseplan:
+    image: ghcr.io/lx-s93/editor:latest
+    container_name: pascal-houseplan
+    restart: unless-stopped
+    ports:
+      # Keep the container port at 3000.
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PASCAL_DATA_DIR: /data
+      # No login is built in. "true" lets every client that can reach the port
+      # save and edit projects. Only use it behind your LAN/VPN or a reverse
+      # proxy with authentication. See unraid/UNRAID.md.
+      PASCAL_SCENE_API_OPEN_ACCESS: "true"
+      # Only needed when the app is opened through an HTTPS address (reverse
+      # proxy), for example "https://planer.example.org". Comma separated.
+      # PASCAL_SCENE_API_ORIGINS: "https://planer.example.org"
+    volumes:
+      - /mnt/user/appdata/pascal-houseplan:/data
