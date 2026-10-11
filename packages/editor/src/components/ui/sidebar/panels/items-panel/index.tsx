@@ -8,7 +8,7 @@ import { cn } from '../../../../../lib/utils'
 import type { CatalogCategory } from '../../../../../store/use-editor'
 import useEditor from '../../../../../store/use-editor'
 import { furnishTools } from '../../../action-menu/furnish-tools'
-import { CATALOG_ITEMS } from '../../../item-catalog/catalog-items'
+import { CATALOG_ITEMS } from '@pascal-app/core/catalog'
 import { ItemCatalog } from '../../../item-catalog/item-catalog'
 import { type FunctionTreeNode, FunctionTreePanel } from './function-tree-panel'
 

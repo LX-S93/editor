@@ -37,7 +37,7 @@ export type CreatePascalMcpServerOptions = {
   executeTool?: PascalMcpToolExecutor
   /**
    * The items search_assets, place_items and furnish_room draw from, read once per server. The
-   * hosted app passes its published library; without it, a small built-in list.
+   * hosted app passes its published library; without it, the editor's built-in library.
    */
   catalog?: AssetCatalog
   /** Runs and stores `add_object` modules; without it the tool answers `scripts_unavailable`. */

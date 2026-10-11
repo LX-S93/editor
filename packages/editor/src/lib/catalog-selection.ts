@@ -1,4 +1,4 @@
-import type { CatalogItem } from '../components/ui/item-catalog/catalog-items'
+import type { CatalogItem } from '@pascal-app/core/catalog'
 
 export function isCatalogItemSelected(
   item: Pick<CatalogItem, 'id'>,

@@ -1,14 +1,12 @@
+import { CATALOG_ITEMS } from '@pascal-app/core/catalog'
 import type { AssetInput } from '@pascal-app/core/schema'
 
 /**
- * Small built-in catalog for standalone/headless MCP use.
- *
- * The editor has a much larger UI catalog, but depending on `@pascal-app/editor`
- * from the MCP package would pull browser/React code into the headless server.
- * These entries mirror the stable IDs and asset paths used by the editor for
- * common AI-generated residential layouts.
+ * The stable core of the built-in catalog: the items residential layouts are generated from. Their
+ * dimensions and offsets are pinned here, so furnish_room lays out the same way whatever the
+ * editor's library holds.
  */
-export const MCP_CATALOG_ITEMS: AssetInput[] = [
+const MCP_CATALOG_ITEMS: AssetInput[] = [
   {
     id: 'double-bed',
     category: 'furniture',
@@ -301,7 +299,14 @@ export const MCP_CATALOG_ITEMS: AssetInput[] = [
  */
 export type AssetCatalog = () => Promise<readonly AssetInput[]>
 
-export const builtInCatalog: AssetCatalog = async () => MCP_CATALOG_ITEMS
+// The editor's library lives in core, so a headless server offers all of it: the pinned items above
+// first, then every other item of the library.
+const BUILT_IN_ITEMS: readonly AssetInput[] = [
+  ...MCP_CATALOG_ITEMS,
+  ...CATALOG_ITEMS.filter((item) => !MCP_CATALOG_ITEMS.some((pinned) => pinned.id === item.id)),
+]
+
+export const builtInCatalog: AssetCatalog = async () => BUILT_IN_ITEMS
 
 /** A host's catalog, read once by the first call that needs it; a failed read is tried again. */
 export function cachedCatalog(load: AssetCatalog): AssetCatalog {
