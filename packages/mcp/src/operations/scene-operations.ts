@@ -22,6 +22,7 @@ import type {
   SceneStore,
   SceneWithGraph,
 } from '../storage/types'
+import { SceneNotFoundError } from '../storage/types'
 
 export type CreateSceneOperationsOptions = {
   bridge?: SceneBridge
@@ -87,6 +88,10 @@ export interface SceneOperations {
   saveScene(options: SceneSaveOptions): Promise<SceneMeta>
   loadStoredScene(id: string): Promise<SceneWithGraph | null>
   listScenes(options?: SceneListOptions): Promise<SceneMeta[]>
+  /** Clone a stored scene into a new design that points back at it; the source is not touched. */
+  createDesign(sourceId: string, name: string): Promise<SceneMeta>
+  /** The scene's family: base, designs cloned from it and theirs, parents first. */
+  listDesignFamily(sceneId: string): Promise<SceneMeta[]>
   deleteStoredScene(id: string, options?: SceneMutateOptions): Promise<SceneDeleteResult>
   renameStoredScene(id: string, newName: string, options?: SceneMutateOptions): Promise<SceneMeta>
   appendSceneEvent(options: SceneEventAppendOptions): Promise<SceneEvent | null>
@@ -332,6 +337,44 @@ class SceneOperationsFacade implements SceneOperations {
 
   async listScenes(options?: SceneListOptions): Promise<SceneMeta[]> {
     return this.requireStore().list(options)
+  }
+
+  async createDesign(sourceId: string, name: string): Promise<SceneMeta> {
+    const store = this.requireStore()
+    const source = await store.load(sourceId)
+    if (!source) throw new SceneNotFoundError(`Scene "${sourceId}" not found`)
+    return store.save({ name, graph: source.graph, parentId: source.id, ownerId: source.ownerId })
+  }
+
+  async listDesignFamily(sceneId: string): Promise<SceneMeta[]> {
+    const scenes = await this.requireStore().list({ limit: 1000 })
+    const byId = new Map(scenes.map((scene) => [scene.id, scene]))
+    let root = byId.get(sceneId)
+    if (!root) return []
+    const seen = new Set<string>()
+    while (root.parentId && byId.has(root.parentId) && !seen.has(root.id)) {
+      seen.add(root.id)
+      root = byId.get(root.parentId) as SceneMeta
+    }
+    const children = new Map<string, SceneMeta[]>()
+    for (const scene of scenes) {
+      if (!scene.parentId) continue
+      const siblings = children.get(scene.parentId) ?? []
+      siblings.push(scene)
+      children.set(scene.parentId, siblings)
+    }
+    const family: SceneMeta[] = []
+    const visit = (scene: SceneMeta) => {
+      if (family.some((entry) => entry.id === scene.id)) return
+      family.push(scene)
+      for (const child of (children.get(scene.id) ?? []).sort((a, b) =>
+        a.createdAt.localeCompare(b.createdAt),
+      )) {
+        visit(child)
+      }
+    }
+    visit(root)
+    return family
   }
 
   async deleteStoredScene(id: string, options?: SceneMutateOptions): Promise<SceneDeleteResult> {

@@ -19,6 +19,7 @@ import { useLocalArtifactStore } from '@/lib/local-artifact-store'
 import { type PersistedSceneGraph, sceneGraphSignature } from '@/lib/scene-signature'
 import { cn } from '@/lib/utils'
 import { BuildTab } from './build-tab'
+import { DesignSwitcher } from './design-switcher'
 import { PaintPanel } from './paint-panel'
 import { CommunityViewerToolbarLeft, CommunityViewerToolbarRight } from './viewer-toolbar'
 
@@ -312,6 +313,7 @@ export function SceneLoader({ initialScene, meta }: SceneLoaderProps) {
           All scenes
         </Link>
       </div>
+      <DesignSwitcher sceneId={meta.id} />
       <Editor
         disablePostFx={lightPreview}
         layoutVersion="v2"

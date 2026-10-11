@@ -9,6 +9,8 @@ export interface SceneMeta {
   id: SceneId
   name: string
   projectId: string | null
+  /** The scene this design was cloned from; null for a base scene. */
+  parentId?: string | null
   thumbnailUrl: string | null
   /** Browser-visible model version. Draft saves may update the same version repeatedly. */
   version: number
@@ -50,6 +52,8 @@ export interface SceneSaveOptions {
   id?: SceneId
   name: string
   projectId?: string | null
+  /** Marks the scene as a design cloned from this scene. Kept from the stored row when omitted. */
+  parentId?: string | null
   ownerId?: string | null
   graph: SceneGraph
   thumbnailUrl?: string | null

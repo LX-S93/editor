@@ -967,6 +967,32 @@
         "destructiveHint": "It does not create, update, replace, delete, load, or save Pascal scene or project state.",
         "openWorldHint": "It operates only on the connected Pascal service and the user's own editor tab and does not access the public internet."
       }
+    },
+    {
+      "name": "create_design",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "justifications": {
+        "readOnlyHint": "It is not read-only because it saves a new scene that is a clone of an existing one.",
+        "destructiveHint": "It only adds a new design and leaves the source scene and every other scene unchanged.",
+        "openWorldHint": "It operates on the connected Pascal scene store without accessing the public internet."
+      }
+    },
+    {
+      "name": "list_designs",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "justifications": {
+        "readOnlyHint": "It lists the designs of a scene family without changing or selecting a scene.",
+        "destructiveHint": "It does not create, update, replace, delete, load, or save Pascal scene or project state.",
+        "openWorldHint": "It operates only on data already available inside the connected Pascal service and does not access the public internet."
+      }
     }
   ]
 }

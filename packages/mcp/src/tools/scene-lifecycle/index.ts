@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { SceneOperations } from '../../operations'
 import { registerCreateProject } from './create-project'
 import { registerDeleteScene } from './delete-scene'
+import { registerDesignTools } from './designs'
 import { registerGetProjectStatus } from './get-project-status'
 import { registerListScenes } from './list-scenes'
 import { registerLoadScene } from './load-scene'
@@ -22,10 +23,18 @@ export function registerSceneLifecycleTools(server: McpServer, operations: Scene
   registerListScenes(server, operations)
   registerDeleteScene(server, operations)
   registerRenameScene(server, operations)
+  registerDesignTools(server, operations)
 }
 
 export { createProjectInput, createProjectOutput, registerCreateProject } from './create-project'
 export { deleteSceneInput, deleteSceneOutput, registerDeleteScene } from './delete-scene'
+export {
+  createDesignInput,
+  createDesignOutput,
+  listDesignsInput,
+  listDesignsOutput,
+  registerDesignTools,
+} from './designs'
 export {
   getProjectStatusInput,
   getProjectStatusOutput,
