@@ -513,6 +513,11 @@ export class SqliteSceneStore implements SceneStore {
           `Scene "${safeId}" version mismatch: expected ${opts.expectedVersion}, got ${existing.version}`,
         )
       }
+      // Designs cloned from this one move up to its parent, so none is left without a base.
+      db.query('UPDATE scenes SET parent_id = ? WHERE parent_id = ?').run(
+        existing.parent_id,
+        safeId,
+      )
       db.query('DELETE FROM scenes WHERE id = ?').run(safeId)
       return { deleted: true, hidden: false }
     })

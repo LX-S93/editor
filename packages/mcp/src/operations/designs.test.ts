@@ -80,4 +80,19 @@ describe('designs', () => {
 
     await expect(operations.createDesign('missing', 'x')).rejects.toBeInstanceOf(SceneNotFoundError)
   })
+
+  test('deleting a design moves its sub-designs up to its parent', async () => {
+    const operations = createSceneOperations({ store })
+    await operations.saveScene({ id: 'bestand', name: 'Bestand', graph })
+    const a = await operations.createDesign('bestand', 'Variante A')
+    const a1 = await operations.createDesign(a.id, 'Variante A1')
+
+    await operations.deleteStoredScene(a.id)
+
+    expect((await store.load(a1.id))?.parentId).toBe('bestand')
+    expect((await operations.listDesignFamily(a1.id)).map((scene) => scene.id)).toEqual([
+      'bestand',
+      a1.id,
+    ])
+  })
 })
