@@ -16,7 +16,8 @@ export function registerCatalogItems(
     'pascal://catalog/items',
     {
       title: 'Item catalog',
-      description: "Placeable items: the host's library when it has one, else the editor's built-in library.",
+      description:
+        "Placeable items: the host's library when it has one, else the editor's built-in library.",
       mimeType: 'application/json',
     },
     async (uri) => {
