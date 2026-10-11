@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import type { SceneOperations } from '../../operations'
 import { SceneNotFoundError } from '../../storage/types'
-import { READ_ONLY_TOOL_ANNOTATIONS, ADDITIVE_TOOL_ANNOTATIONS } from '../annotations'
+import { ADDITIVE_TOOL_ANNOTATIONS, READ_ONLY_TOOL_ANNOTATIONS } from '../annotations'
 import { ErrorCode, throwMcpError } from '../errors'
 import { editorUrlFor } from './metadata'
 

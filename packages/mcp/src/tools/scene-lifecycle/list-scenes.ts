@@ -17,6 +17,7 @@ export const listScenesOutput = {
       id: z.string(),
       name: z.string(),
       projectId: z.string().nullable(),
+      parentId: z.string().nullable().optional(),
       thumbnailUrl: z.string().nullable(),
       version: z.number(),
       createdAt: z.string(),
