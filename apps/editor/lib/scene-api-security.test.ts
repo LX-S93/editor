@@ -95,3 +95,25 @@ test('applies configured CORS origins for preflight', () => {
   expect(response.status).toBe(204)
   expect(response.headers.get('access-control-allow-origin')).toBe('https://app.example')
 })
+
+test('accepts a browser write from the address the server was reached on, behind a bind address', () => {
+  process.env.PASCAL_SCENE_API_OPEN_ACCESS = 'true'
+  const request = new Request('http://0.0.0.0:3000/api/scenes/a/designs', {
+    method: 'POST',
+    headers: { host: '192.168.60.10:3210', origin: 'http://192.168.60.10:3210' },
+  })
+
+  expect(guardSceneApiRequest(request)).toBeNull()
+})
+
+test('rejects a browser write from another site', async () => {
+  process.env.PASCAL_SCENE_API_OPEN_ACCESS = 'true'
+  const request = new Request('http://0.0.0.0:3000/api/scenes/a/designs', {
+    method: 'POST',
+    headers: { host: '192.168.60.10:3210', origin: 'https://evil.example' },
+  })
+
+  const response = guardSceneApiRequest(request)
+
+  expect(response?.status).toBe(403)
+})
