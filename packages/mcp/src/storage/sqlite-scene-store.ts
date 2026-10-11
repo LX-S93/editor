@@ -43,6 +43,7 @@ interface SceneRow {
   id: string
   name: string
   project_id: string | null
+  parent_id: string | null
   owner_id: string | null
   thumbnail_url: string | null
   version: number
@@ -142,6 +143,7 @@ function rowToMeta(row: SceneRow): SceneMeta {
     id: row.id,
     name: row.name,
     projectId: row.project_id,
+    parentId: row.parent_id,
     ownerId: row.owner_id,
     thumbnailUrl: row.thumbnail_url,
     version: row.version,
@@ -376,6 +378,7 @@ export class SqliteSceneStore implements SceneStore {
       const createdAt = existing?.created_at ?? placeholder?.createdAt ?? now
       const nodeCount = Object.keys(opts.graph.nodes ?? {}).length
       const projectId = opts.projectId ?? existing?.project_id ?? (placeholder ? id : null)
+      const parentId = opts.parentId ?? existing?.parent_id ?? null
       const ownerId = opts.ownerId ?? existing?.owner_id ?? placeholder?.ownerId ?? null
       const thumbnailUrl =
         opts.thumbnailUrl ?? existing?.thumbnail_url ?? placeholder?.thumbnailUrl ?? null
@@ -385,6 +388,7 @@ export class SqliteSceneStore implements SceneStore {
           `UPDATE scenes
              SET name = ?,
                  project_id = ?,
+                 parent_id = ?,
                  owner_id = ?,
                  thumbnail_url = ?,
                  version = ?,
@@ -396,6 +400,7 @@ export class SqliteSceneStore implements SceneStore {
         ).run(
           opts.name,
           projectId,
+          parentId,
           ownerId,
           thumbnailUrl,
           version,
@@ -408,13 +413,14 @@ export class SqliteSceneStore implements SceneStore {
       } else {
         db.query(
           `INSERT INTO scenes (
-             id, name, project_id, owner_id, thumbnail_url, version,
+             id, name, project_id, parent_id, owner_id, thumbnail_url, version,
              created_at, updated_at, size_bytes, node_count, graph_json
-           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         ).run(
           id,
           opts.name,
           projectId,
+          parentId,
           ownerId,
           thumbnailUrl,
           version,
@@ -438,6 +444,7 @@ export class SqliteSceneStore implements SceneStore {
         id,
         name: opts.name,
         projectId,
+        parentId,
         ownerId,
         thumbnailUrl,
         version,
@@ -484,7 +491,7 @@ export class SqliteSceneStore implements SceneStore {
     const db = await this.database()
     const rows = db
       .query(
-        `SELECT id, name, project_id, owner_id, thumbnail_url, version,
+        `SELECT id, name, project_id, parent_id, owner_id, thumbnail_url, version,
                 created_at, updated_at, size_bytes, node_count, graph_json
            FROM scenes
            ${where}
@@ -666,6 +673,13 @@ export class SqliteSceneStore implements SceneStore {
       CREATE INDEX IF NOT EXISTS scene_events_scene_event_idx
         ON scene_events(scene_id, event_id);
     `)
+
+    // Designs: a scene cloned from another keeps a pointer to its parent.
+    const columns = db.query('PRAGMA table_info(scenes)').all() as Array<{ name: string }>
+    if (!columns.some((column) => column.name === 'parent_id')) {
+      db.exec('ALTER TABLE scenes ADD COLUMN parent_id TEXT')
+    }
+    db.exec('CREATE INDEX IF NOT EXISTS scenes_parent_idx ON scenes(parent_id)')
   }
 
   private async withWriteTransaction<T>(fn: (db: SqliteDatabase) => T | Promise<T>): Promise<T> {
@@ -689,7 +703,7 @@ export class SqliteSceneStore implements SceneStore {
     return asSceneRow(
       db
         .query(
-          `SELECT id, name, project_id, owner_id, thumbnail_url, version,
+          `SELECT id, name, project_id, parent_id, owner_id, thumbnail_url, version,
                   created_at, updated_at, size_bytes, node_count, graph_json
              FROM scenes
             WHERE id = ?`,
