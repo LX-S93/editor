@@ -367,8 +367,11 @@ class SceneOperationsFacade implements SceneOperations {
     const visit = (scene: SceneMeta) => {
       if (family.some((entry) => entry.id === scene.id)) return
       family.push(scene)
-      for (const child of (children.get(scene.id) ?? []).sort((a, b) =>
-        a.createdAt.localeCompare(b.createdAt),
+      // Designs cloned within the same millisecond share a createdAt; the name keeps their order stable.
+      for (const child of (children.get(scene.id) ?? []).sort(
+        (a, b) =>
+          a.createdAt.localeCompare(b.createdAt) ||
+          a.name.localeCompare(b.name, undefined, { numeric: true }),
       )) {
         visit(child)
       }
