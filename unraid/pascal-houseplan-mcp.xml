@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>pascal-houseplan-mcp</Name>
+  <Repository>ghcr.io/lx-s93/editor:latest</Repository>
+  <Registry>https://github.com/LX-S93/editor/pkgs/container/editor</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/LX-S93/editor</Support>
+  <Project>https://github.com/pascalorg/editor</Project>
+  <Overview>MCP-Server des Haus-Planers. Damit kann ein KI-Assistent (z.B. Claude) Waende, Raeume und Moebel in den Projekten des Planers lesen und aendern. Nutzt dasselbe Datenverzeichnis wie der Container pascal-houseplan. Zugriff nur mit Token.</Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI/>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="MCP-Port" Target="8787" Default="8787" Mode="tcp" Description="Port des MCP-Servers (Endpunkt /mcp)." Type="Port" Display="always" Required="true" Mask="false">8787</Config>
+  <Config Name="Daten (Projekte)" Target="/data" Default="/mnt/user/appdata/pascal-houseplan" Mode="rw" Description="MUSS derselbe Ordner sein wie beim Container pascal-houseplan, sonst sieht der Planer die Aenderungen nicht." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/pascal-houseplan</Config>
+  <Config Name="Token" Target="PASCAL_MCP_HTTP_TOKEN" Default="" Mode="" Description="Geheimes Zugriffstoken, z.B. mit 'openssl rand -hex 32' erzeugen. Ohne Token startet der Container nicht." Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="Modus" Target="PASCAL_MODE" Default="mcp" Mode="" Description="Muss mcp bleiben. Startet statt des Editors den MCP-Server." Type="Variable" Display="advanced" Required="true" Mask="false">mcp</Config>
+</Container>

@@ -28,10 +28,12 @@ ENV PASCAL_DATA_DIR=/data \
 VOLUME /data
 
 USER ${PUID}:${PGID}
-EXPOSE 3000
+EXPOSE 3000 8787
 WORKDIR /app/apps/editor
 
+# PASCAL_MODE=editor (default) serves the web editor; PASCAL_MODE=mcp serves the
+# MCP server instead. See docker/entrypoint.sh.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD wget -q -O /dev/null http://127.0.0.1:3000/ || exit 1
+  CMD ["/app/docker/healthcheck.sh"]
 
-CMD ["bun", "run", "start"]
+ENTRYPOINT ["/app/docker/entrypoint.sh"]

@@ -34,6 +34,51 @@ braucht mehrere GB RAM) und von Unraid nur noch heruntergeladen und gestartet.
 
 Danach erreichst du den Planer unter `http://<UNRAID-IP>:3000/scenes`.
 
+## 2b. KI-Assistent anbinden (MCP, optional)
+
+Über MCP kann ein Assistent wie Claude die Projekte lesen und bearbeiten (Wände, Räume,
+Möbel, Maße, Kollisionsprüfung). Dafür läuft ein **zweiter Container aus demselben Image**,
+der statt des Editors den MCP-Server startet und **denselben Datenordner** nutzt. Änderungen
+des Assistenten erscheinen live im geöffneten Editor-Tab.
+
+1. Token erzeugen, z. B. im Unraid-Terminal: `openssl rand -hex 32`
+2. Vorlage `unraid/pascal-houseplan-mcp.xml` ebenfalls nach
+   `/boot/config/plugins/dockerMan/templates-user/` kopieren, **Add Container** →
+   Template `pascal-houseplan-mcp`, das Token eintragen, den Datenpfad **identisch** zum
+   Editor-Container lassen, **Apply**. (Compose: zweiten Dienst aus `docker-compose.yml`
+   verwenden und `PASCAL_MCP_HTTP_TOKEN` setzen.)
+3. Prüfen: `http://<UNRAID-IP>:8787/health` im Browser. Erwartet `401 unauthorized`
+   (der Server läuft und verlangt das Token).
+4. In Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`) eintragen. Benötigt
+   Node.js auf dem PC (für `npx`):
+
+```json
+{
+  "mcpServers": {
+    "pascal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://<UNRAID-IP>:8787/mcp",
+        "--allow-http",
+        "--header",
+        "Authorization:${PASCAL_AUTH}"
+      ],
+      "env": { "PASCAL_AUTH": "Bearer <DEIN-TOKEN>" }
+    }
+  }
+}
+```
+
+5. Claude Desktop neu starten. Arbeitsweise: Szene im Editor anlegen und speichern, dem
+   Assistenten sagen, welche Szene er laden soll (`load_scene`), dann bearbeiten lassen.
+   Bearbeitet ihr dieselbe Szene gleichzeitig, meldet der Server einen
+   `live_sync_version_conflict`, und der Assistent lädt die Szene neu.
+
+Das Token ist echte Zugriffskontrolle, anders als beim Editor ohne Anmeldung. Gib es nicht
+weiter und setze den Port nicht ins offene Internet.
+
 ## 3. Zugriff absichern (wichtig)
 
 Die Anwendung hat **keine eingebaute Anmeldung**. Mit `PASCAL_SCENE_API_OPEN_ACCESS=true`
@@ -69,6 +114,8 @@ Neuer Push auf `main` → Image wird neu gebaut → in Unraid auf dem Docker-Tab
 | `PASCAL_SCENE_API_OPEN_ACCESS` | `true`: Speicher-API ohne Token für Clients im Netz (Standard im Image: aus) |
 | `PASCAL_SCENE_API_TOKEN` | Alternative mit Token. Der Browser-Client sendet keins, daher nur für Skripte/MCP sinnvoll |
 | `PASCAL_SCENE_API_ORIGINS` | Zusätzlich erlaubte Browser-Adressen, kommagetrennt |
+| `PASCAL_MODE` | `editor` (Standard) oder `mcp`: welche Rolle der Container übernimmt |
+| `PASCAL_MCP_HTTP_TOKEN` | Pflicht bei `PASCAL_MODE=mcp`: Bearer-Token für den MCP-Server |
 | `PASCAL_INTERNAL_URL` | Adresse, unter der sich der Server intern selbst erreicht (Standard `http://127.0.0.1:3000`) |
 
 ## Fehlersuche

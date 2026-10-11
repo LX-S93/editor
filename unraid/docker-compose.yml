@@ -20,3 +20,18 @@ services:
       # PASCAL_SCENE_API_ORIGINS: "https://planer.example.org"
     volumes:
       - /mnt/user/appdata/pascal-houseplan:/data
+
+  # MCP server for AI assistants. Same image and same /data as the editor.
+  # Create the token with: openssl rand -hex 32
+  pascal-houseplan-mcp:
+    image: ghcr.io/lx-s93/editor:latest
+    container_name: pascal-houseplan-mcp
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      PASCAL_MODE: mcp
+      PASCAL_DATA_DIR: /data
+      PASCAL_MCP_HTTP_TOKEN: ${PASCAL_MCP_HTTP_TOKEN:?set a token, see comment above}
+    volumes:
+      - /mnt/user/appdata/pascal-houseplan:/data
