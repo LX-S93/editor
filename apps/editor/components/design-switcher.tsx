@@ -1,6 +1,12 @@
 'use client'
 
-import { CornerDownRight, Pencil, Plus, Trash2 } from 'lucide-react'
+import {
+  getHistoryCommandState,
+  runRedo,
+  runUndo,
+  subscribeHistoryCommandState,
+} from '@pascal-app/editor'
+import { CornerDownRight, Pencil, Plus, Redo2, Trash2, Undo2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -28,6 +34,18 @@ export function DesignSwitcher({ sceneId }: DesignSwitcherProps) {
   const [renaming, setRenaming] = useState(false)
   const [newName, setNewName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [history, setHistory] = useState({ canUndo: false, canRedo: false })
+
+  useEffect(() => {
+    const sync = () => {
+      const { canUndo, canRedo } = getHistoryCommandState()
+      setHistory((prev) =>
+        prev.canUndo === canUndo && prev.canRedo === canRedo ? prev : { canUndo, canRedo },
+      )
+    }
+    sync()
+    return subscribeHistoryCommandState(sync)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -138,6 +156,27 @@ export function DesignSwitcher({ sceneId }: DesignSwitcherProps) {
   return (
     <div className="pointer-events-none absolute top-2 left-1/2 z-40 flex max-w-[60vw] -translate-x-1/2 flex-col items-center gap-1">
       <div className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-border bg-background/90 p-1 shadow-sm backdrop-blur">
+        <button
+          aria-label="Rückgängig"
+          className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-accent/40 hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+          disabled={!history.canUndo}
+          onClick={() => runUndo()}
+          title="Rückgängig (Strg/Cmd + Z)"
+          type="button"
+        >
+          <Undo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          aria-label="Wiederholen"
+          className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-accent/40 hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+          disabled={!history.canRedo}
+          onClick={() => runRedo()}
+          title="Wiederholen (Strg/Cmd + Shift + Z)"
+          type="button"
+        >
+          <Redo2 className="h-3.5 w-3.5" />
+        </button>
+        <span aria-hidden="true" className="h-4 w-px shrink-0 bg-border" />
         {designs.map((design) => {
           const depth = depthOf(design)
           const active = design.id === sceneId
