@@ -154,8 +154,12 @@ function configuredOrigins(): Set<string> {
 function isSameOrigin(request: Request, origin: string): boolean {
   const parsedOrigin = parseUrl(origin)
   if (!parsedOrigin) return false
-  const requestUrl = new URL(request.url)
-  return normalizeOrigin(parsedOrigin) === normalizeOrigin(requestUrl)
+  if (normalizeOrigin(parsedOrigin) === normalizeOrigin(new URL(request.url))) return true
+  // In a container the server only knows its bind address, so `request.url` names that rather
+  // than the address the browser used. The Host header is what the browser typed; a page on
+  // another site cannot make its Origin match it.
+  const host = request.headers.get('host')?.toLowerCase()
+  return host !== undefined && parsedOrigin.host.toLowerCase() === host
 }
 
 function isLoopbackRequest(request: Request): boolean {
