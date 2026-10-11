@@ -1,4 +1,4 @@
-import type { AssetInput } from '@pascal-app/core'
+import type { AssetInput } from '../schema'
 
 /**
  * A catalog tile: the asset plus optional editor placement metadata.

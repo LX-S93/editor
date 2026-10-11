@@ -4,7 +4,7 @@ import { type AssetCatalog, builtInCatalog } from '../tools/asset-catalog'
 
 /**
  * `pascal://catalog/items` — the items place_items draws from: the host's library when it passes
- * one, else a dependency-free built-in subset, so headless agents can still place furniture.
+ * one, else the built-in library, so headless agents can still place furniture.
  */
 export function registerCatalogItems(
   server: McpServer,
@@ -16,7 +16,8 @@ export function registerCatalogItems(
     'pascal://catalog/items',
     {
       title: 'Item catalog',
-      description: "Placeable items: the host's library when it has one, else a built-in subset.",
+      description:
+        "Placeable items: the host's library when it has one, else the editor's built-in library.",
       mimeType: 'application/json',
     },
     async (uri) => {

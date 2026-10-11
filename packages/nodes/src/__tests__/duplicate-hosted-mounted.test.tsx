@@ -24,6 +24,7 @@ import {
   WallNode,
   ZoneNode,
 } from '@pascal-app/core'
+import { CATALOG_ITEMS } from '@pascal-app/core/catalog'
 import { nodeLevelFrame, ProceduralItemNode } from '@pascal-app/core/procedural-items'
 import { MoveRegistryNodeTool, useEditor } from '@pascal-app/editor'
 import { useViewer } from '@pascal-app/viewer'
@@ -32,7 +33,6 @@ import { Component, type ReactNode, StrictMode } from 'react'
 import { Euler, Mesh, Vector3 } from 'three'
 import gridTableRecipe from '../../../core/src/procedural-items/__fixtures__/grid-table.json'
 import { counterRecipe } from '../../../core/src/procedural-items/fixtures'
-import { CATALOG_ITEMS } from '../../../editor/src/components/ui/item-catalog/catalog-items'
 import {
   createFreshPlacementSubtree,
   duplicatesAsFreshSubtree,

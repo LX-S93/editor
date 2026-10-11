@@ -17,6 +17,7 @@ export {
   subscribeSceneCommits,
   useScene,
 } from '@pascal-app/core'
+export { CATALOG_ITEMS } from '@pascal-app/core/catalog'
 export { useViewer } from '@pascal-app/viewer'
 export type { EditorProps } from './components/editor'
 export { default as Editor } from './components/editor'
@@ -252,7 +253,6 @@ export { TerrainSculptPanel } from './components/ui/controls/terrain-sculpt-pane
 export { ToggleControl } from './components/ui/controls/toggle-control'
 export { ToolOptionsPanel } from './components/ui/controls/tool-options-panel'
 export { FloatingLevelSelector } from './components/ui/floating-level-selector'
-export { CATALOG_ITEMS } from './components/ui/item-catalog/catalog-items'
 // A base plate's panel (one connected footprint's floor and foundation); the
 // slab kind's panel hands base plates to it.
 export { FloorFoundationPanel } from './components/ui/panels/floor-foundation-panel'

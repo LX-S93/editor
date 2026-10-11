@@ -26,6 +26,11 @@
       "import": "./dist/utils/scene-migrations.js",
       "default": "./dist/utils/scene-migrations.js"
     },
+    "./catalog": {
+      "types": "./dist/catalog/index.d.ts",
+      "import": "./dist/catalog/index.js",
+      "default": "./dist/catalog/index.js"
+    },
     "./capture": {
       "types": "./dist/capture/index.d.ts",
       "import": "./dist/capture/index.js",

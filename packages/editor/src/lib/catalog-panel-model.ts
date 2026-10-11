@@ -1,5 +1,5 @@
+import { CATALOG_ITEMS, type CatalogItem } from '@pascal-app/core/catalog'
 import { useViewer } from '@pascal-app/viewer'
-import { CATALOG_ITEMS, type CatalogItem } from '../components/ui/item-catalog/catalog-items'
 import useEditor, { type CatalogCategory } from '../store/use-editor'
 
 export function filterCatalogItems({

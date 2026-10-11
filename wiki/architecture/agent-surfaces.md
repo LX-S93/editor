@@ -41,7 +41,7 @@ A tool is written once and registered twice; never build the same tool separatel
 6. **By hand**, where possible: offer the editor's alternative, in the same change or as a follow-up. It never holds the tool back (agent first).
 7. **Knowledge**: the `pascal-3d` skill, the agent guide (`pascal://agent-guide`) and the MCP README's tool table.
 
-A tool that needs something only a host has keeps the same contract and operation; the host passes the missing piece to `createPascalMcpServer`. Without a renderer (`sceneViews`) or a script runtime (`geometryScripts`) the tool still exists and answers with a code (`view_unavailable`, `scripts_unavailable`); without a `catalog` the item tools draw from a small built-in list; hosted service tools are registered only with a `services` executor.
+A tool that needs something only a host has keeps the same contract and operation; the host passes the missing piece to `createPascalMcpServer`. Without a renderer (`sceneViews`) or a script runtime (`geometryScripts`) the tool still exists and answers with a code (`view_unavailable`, `scripts_unavailable`); without a `catalog` the item tools draw from the editor's built-in library; hosted service tools are registered only with a `services` executor.
 
 ## Plugin tools
 
