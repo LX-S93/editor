@@ -7,6 +7,7 @@ afterEach(() => {
   restoreEnv('PASCAL_SCENE_API_TOKEN')
   restoreEnv('PASCAL_SCENE_API_ORIGINS')
   restoreEnv('PASCAL_SCENE_API_RATE_LIMIT')
+  restoreEnv('PASCAL_SCENE_API_OPEN_ACCESS')
 })
 
 function restoreEnv(key: keyof NodeJS.ProcessEnv): void {
@@ -33,6 +34,38 @@ test('requires a token for non-loopback scene API requests', async () => {
 
   expect(response?.status).toBe(503)
   expect(await response?.json()).toEqual({ error: 'scene_api_token_required' })
+})
+
+test('allows non-loopback requests without a token when open access is enabled', () => {
+  delete process.env.PASCAL_SCENE_API_TOKEN
+  process.env.PASCAL_SCENE_API_OPEN_ACCESS = 'true'
+  const request = new Request('http://192.168.1.10:3000/api/scenes', {
+    headers: { host: '192.168.1.10:3000' },
+  })
+
+  expect(guardSceneApiRequest(request)).toBeNull()
+})
+
+test('open access does not weaken a configured token', async () => {
+  process.env.PASCAL_SCENE_API_TOKEN = 'secret'
+  process.env.PASCAL_SCENE_API_OPEN_ACCESS = '1'
+  const request = new Request('http://192.168.1.10:3000/api/scenes', {
+    headers: { host: '192.168.1.10:3000' },
+  })
+
+  const response = guardSceneApiRequest(request)
+
+  expect(response?.status).toBe(401)
+})
+
+test('open access stays off for unrelated values', () => {
+  delete process.env.PASCAL_SCENE_API_TOKEN
+  process.env.PASCAL_SCENE_API_OPEN_ACCESS = '0'
+  const request = new Request('http://192.168.1.10:3000/api/scenes', {
+    headers: { host: '192.168.1.10:3000' },
+  })
+
+  expect(guardSceneApiRequest(request)?.status).toBe(503)
 })
 
 test('accepts bearer token auth when configured', () => {

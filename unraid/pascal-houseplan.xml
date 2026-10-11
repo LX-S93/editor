@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>pascal-houseplan</Name>
+  <Repository>ghcr.io/lx-s93/editor:latest</Repository>
+  <Registry>https://github.com/LX-S93/editor/pkgs/container/editor</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/LX-S93/editor</Support>
+  <Project>https://github.com/pascalorg/editor</Project>
+  <Overview>3D-Haus- und Raumplaner (Pascal Editor, eigener Fork). Grundrisse zeichnen, Waende hochziehen, Moebel setzen. Projekte liegen in einer SQLite-Datei im Appdata-Ordner. Es gibt keine eingebaute Anmeldung: nur im LAN/VPN oder hinter einem Reverse Proxy mit Login betreiben.</Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:3000]/scenes</WebUI>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="WebUI-Port" Target="3000" Default="3000" Mode="tcp" Description="Port der Weboberflaeche. Container-Port bleibt 3000." Type="Port" Display="always" Required="true" Mask="false">3000</Config>
+  <Config Name="Daten (Projekte)" Target="/data" Default="/mnt/user/appdata/pascal-houseplan" Mode="rw" Description="Hier liegt pascal.db mit allen Projekten. In die Sicherung aufnehmen." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/pascal-houseplan</Config>
+  <Config Name="Zugriff ohne Token" Target="PASCAL_SCENE_API_OPEN_ACCESS" Default="true" Mode="" Description="true = jeder, der den Port erreicht, darf Projekte lesen und aendern. Nur im LAN/VPN oder hinter Login-Proxy verwenden." Type="Variable" Display="always" Required="true" Mask="false">true</Config>
+  <Config Name="Erlaubte HTTPS-Adressen" Target="PASCAL_SCENE_API_ORIGINS" Default="" Mode="" Description="Nur bei Zugriff ueber Reverse Proxy mit HTTPS, z.B. https://planer.example.org (mehrere mit Komma trennen)." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NODE_ENV" Target="NODE_ENV" Default="production" Mode="" Description="" Type="Variable" Display="advanced" Required="true" Mask="false">production</Config>
+</Container>
